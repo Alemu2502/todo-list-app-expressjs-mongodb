@@ -25,7 +25,7 @@ Live at 🚀 https://todo-list-rfeb.onrender.com/
 1. Clone the repository:
  git clone [https://github.com/Alemu2502/todo-list-app-expressjs-mongodb.git]
  2, cd expressjs
- 3, cd TODO-LIST-APP-EXPRESSJS-MONGODB
+ 3, cd todo-list-app-expressjs-mongodb
 4. Install the dependencies:
  npm install
 
