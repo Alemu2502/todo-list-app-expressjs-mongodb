@@ -16,8 +16,6 @@ This is a full-stack web application built with Node.js, Express.js, MongoDB, an
 
 ## Screenshots
 
-![Todo List App](https://i.ibb.co/Zh6kgzN/Screenshot-2023-06-17-012034.png)
-
 *Screenshot of the Todo List App in action*
 
 Live at 🚀 https://todo-list-rfeb.onrender.com/ 
@@ -25,7 +23,7 @@ Live at 🚀 https://todo-list-rfeb.onrender.com/
 ## Installation
 
 1. Clone the repository:
- git clone [https://github.com/Alemu2502/expressjs.git]
+ git clone [https://github.com/Alemu2502/todo-list-app-expressjs-mongodb.git]
  2, cd expressjs
  3, cd TODO-LIST-APP-EXPRESSJS-MONGODB
 4. Install the dependencies:
