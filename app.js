@@ -72,7 +72,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: "https://todo-list-rfeb.onrender.com/auth/github/todo"
+    callbackURL: "https://todo-list-app-expressjs-mongodb.onrender.com/auth/github/todo"
 },
     function (accessToken, refreshToken, profile, done) {
     
@@ -90,7 +90,7 @@ passport.use(new GitHubStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "https://todo-list-rfeb.onrender.com/auth/google/todo",
+    callbackURL: "https://todo-list-app-expressjs-mongodb.onrender.com/auth/google/todo",
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
 }, (accessToken, refreshToken, profile, done) => {
     const { id, displayName } = profile;
