@@ -1,5 +1,5 @@
 {
-  "name": "todolist-expressjs-mongodb",
+  "name": "todo-list-app-expressjs-mongodb",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",

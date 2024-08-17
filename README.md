@@ -1,6 +1,5 @@
 # Todo List App
 
-
 ## Overview
 
 This is a full-stack web application built with Node.js, Express.js, MongoDB, and EJS templating. It allows users to create and manage todo lists for different categories. The app is hosted on MongoDB Atlas, providing a reliable and scalable cloud database solution.
@@ -18,7 +17,7 @@ This is a full-stack web application built with Node.js, Express.js, MongoDB, an
 
 *Screenshot of the Todo List App in action*
 
-Live at 🚀 https://todo-list-rfeb.onrender.com/ 
+Live at 🚀 https://todo-list-app-expressjs-mongodb.onrender.com/ 
 
 ## Installation
 
