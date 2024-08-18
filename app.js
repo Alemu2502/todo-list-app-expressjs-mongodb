@@ -234,15 +234,15 @@ app.post("/register", async (req, res) => {
     try {
         const apiKey = process.env.MAILBOXLAYER_API_KEY; 
         const apiUrl = 'http://apilayer.net/api/check';
-        const params = {
+        const params = new URLSearchParams({
             access_key: apiKey,
             email: email,
             smtp: 1,
             format: 1
-        };
-
-        const response = await axios.get(apiUrl, { params });
-
+        });
+        const response = await axios.get(`${apiUrl}?${params.toString()}`);
+        //const response = await axios.get(apiUrl, { params });
+        console.log(response.data);
         const smtp_check  = response.data.smtp_check;
         const format_valid = response.data.format_valid;
 
