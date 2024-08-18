@@ -233,7 +233,7 @@ app.post("/register", async (req, res) => {
     // Validate email using mailboxlayer API
     try {
         const apiKey = process.env.MAILBOXLAYER_API_KEY; 
-        const apiUrl = 'http://apilayer.net/api/check';
+        const apiUrl = 'https://apilayer.net/api/check';
         const params = new URLSearchParams({
             access_key: apiKey,
             email: email,
