@@ -229,53 +229,45 @@ app.post("/login", passport.authenticate('local', {
 app.post("/register", async (req, res) => {
 
     const { name, email, password } = req.body;
+ 
+const apiUrl = 'https://apilayer.net/api/check';
+const params = {
+    access_key: apiKey,
+    email: email,
+    smtp: 1,   // Optional, perform SMTP check
+    format: 1  // Optional, format response as JSON
+};
 
-    // Validate email using mailboxlayer API
-    try {
-        const apiKey = process.env.MAILBOXLAYER_API_KEY; 
-        const apiUrl = 'https://apilayer.net/api/check';
-        const params = new URLSearchParams({
-            access_key: apiKey,
-            email: email,
-            smtp: 1,
-            format: 1
-        });
-        const response = await axios.get(`${apiUrl}?${params.toString()}`);
-        //const response = await axios.get(apiUrl, { params });
-        console.log(response.data);
-        const smtp_check  = response.data.smtp_check;
-        const format_valid = response.data.format_valid;
+try {
+    const response = await axios.get(apiUrl, { params });
+    console.log(response.data);
+    const smtp_check = response.data.smtp_check;
+    const format_valid = response.data.format_valid;
 
-        if (smtp_check && format_valid) {
-            
-            User.register(new User({ email, name }), password, (err, user) => {
+    if (smtp_check && format_valid) {
+        User.register(new User({ email, name }), password, (err, user) => {
+            if (err) {
+                console.error(err);
+                return res.redirect('/register');
+            }
+    
+            req.login(user, function (err) {
                 if (err) {
                     console.error(err);
-                    return res.redirect('/register');
+                    return res.redirect('/login');
                 }
-        
-                // Use req.login to log the user in and then redirect to '/todo'
-                req.login(user, function (err) {
-                    if (err) {
-                        console.error(err);
-                        return res.redirect('/login');
-                    }
-                    return res.redirect('/todo');
-                });
+                return res.redirect('/todo');
             });
+        });
 
-        } else {
-            return res.status(400).render("signup", {errorMessage: "Invalid Email"});
-        }
-    } catch (error) {
-        console.error('Email validation error:', error);
-        return res.status(500).render("signup", {errorMessage: "Email validation failed. Please try again later"});
+    } else {
+        return res.status(400).render("signup", {errorMessage: "Invalid Email"});
     }
-
-    
+} catch (error) {
+    console.error('Email validation error:', error);
+    return res.status(500).render("signup", {errorMessage: "Email validation failed. Please try again later"});
+}
 });
-
-
 
 // 404 error handler
 app.use((req, res) => {
