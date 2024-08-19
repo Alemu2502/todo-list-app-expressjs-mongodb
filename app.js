@@ -222,7 +222,7 @@ app.post("/register", async (req, res) => {
 
     try {
         const apiKey = process.env.MAILBOXLAYER_API_KEY;
-        const apiUrl = 'https://apilayer.net/api/check';
+        const apiUrl = 'http://apilayer.net/api/check';
         const params = {
             access_key: apiKey,
             emails: [
