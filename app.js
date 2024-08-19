@@ -27,13 +27,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 const URL = process.env.MONGODB_URL;
 
 mongoose.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("Successfully connected to the database."))
-    .catch(err => console.log("Error connecting to the database:", err));
+    .then(() => {
+        console.log("Successfully connected to the database.");
+    })
+    .catch(err => {
+        console.log("Error connecting to the database:", err);
+    });
 
-const itemSchema = {
+ const itemSchema = {
     name: String
 };
 
@@ -51,15 +56,16 @@ userSchema.plugin(findOrCreate);
 
 const User = mongoose.model('User', userSchema);
 
-passport.serializeUser((user, done) => {
+passport.serializeUser(function (user, done) {
     done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
+passport.deserializeUser(function (id, done) {
     User.findById(id)
         .then(user => done(null, user))
         .catch(err => done(err, null));
 });
+
 
 passport.use(new LocalStrategy(User.authenticate()));
 
@@ -68,12 +74,16 @@ passport.use(new GitHubStrategy({
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
     callbackURL: "https://todo-list-app-expressjs-mongodb.onrender.com/auth/github/todo"
 },
-    (accessToken, refreshToken, profile, done) => {
+    function (accessToken, refreshToken, profile, done) {
+    
         const { id, displayName } = profile;
-        User.findOrCreate({ githubId: id, name: displayName }, (err, user) => {
-            if (err) return done(err);
+        User.findOrCreate({ githubId: id, name: displayName }, function (err, user) {
+            if (err) {
+                return done(err);
+            }
             return done(null, user);
         });
+
     }
 ));
 
@@ -84,24 +94,29 @@ passport.use(new GoogleStrategy({
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
 }, (accessToken, refreshToken, profile, done) => {
     const { id, displayName } = profile;
-    User.findOrCreate({ googleId: id, name: displayName }, (err, user) => {
-        if (err) return done(err);
+    User.findOrCreate({ googleId: id, name: displayName }, function (err, user) {
+        if (err) {
+            return done(err);
+        }
         return done(null, user);
     });
 }));
 
+
 const formatedDate = date.getDate();
 
 app.get("/", (req, res) => {
-    res.render("login", { errorMessage: null });
+    res.render("login", {errorMessage: null});
 });
 
 app.get("/register", (req, res) => {
-    res.render("signup", { errorMessage: null });
+    res.render("signup");
 });
 
 app.get("/logout", (req, res) => {
-    req.logout(() => res.redirect("/"));
+    req.logout(() => {
+        res.redirect("/");
+    });
 });
 
 app.get('/auth/google',
@@ -111,6 +126,7 @@ app.get('/auth/google',
 app.get('/auth/google/todo',
     passport.authenticate('google', { failureRedirect: "/" }),
     (req, res) => {
+        // Successful authentication
         res.redirect("/todo");
     }
 );
@@ -122,12 +138,15 @@ app.get('/auth/github',
 app.get('/auth/github/todo',
     passport.authenticate('github', { failureRedirect: '/' }),
     (req, res) => {
+        // Successful authentication
         res.redirect('/todo');
     }
 );
 
 app.get('/todo', (req, res) => {
+
     if (req.isAuthenticated()) {
+
         User.findById(req.user.id)
             .then((foundUser) => {
                 if (foundUser && foundUser.items.length === 0) {
@@ -137,8 +156,8 @@ app.get('/todo', (req, res) => {
                     ];
                     foundUser.items = defaultItems;
                     foundUser.save()
-                        .then(() => console.log("Default Items Inserted Successfully"))
-                        .catch(error => console.log("Error Inserting Documents: ", error));
+                        .then(() => { console.log("Default Items Inserted Successfully") })
+                        .catch(error => { console.log("Error Inserting Documents: ", error) });
                 }
                 res.render("list", { listTitle: formatedDate, listArray: foundUser.items });
             })
@@ -146,10 +165,13 @@ app.get('/todo', (req, res) => {
                 console.log("Error Finding Documents: ", err);
                 res.redirect("/");
             });
+            
     } else {
+        // If not authenticated, redirect to the home page
         res.redirect("/");
     }
 });
+
 
 app.post('/todo', (req, res) => {
     const newItem = req.body.newItem;
@@ -160,7 +182,7 @@ app.post('/todo', (req, res) => {
         User.findOneAndUpdate(
             { _id: req.user.id },
             { $push: { items: item } },
-            { new: true }
+            { new: true } // returns updated list
         )
             .then(updatedList => {
                 if (updatedList) {
@@ -182,7 +204,7 @@ app.post('/delete', async (req, res) => {
     const checkboxID = req.body.checkboxID;
 
     try {
-        await User.findByIdAndUpdate(
+        const user = await User.findByIdAndUpdate(
             userId,
             { $pull: { items: { _id: checkboxID } } },
             { new: true }
@@ -195,16 +217,17 @@ app.post('/delete', async (req, res) => {
     }
 });
 
-app.get("/login", (req, res) => {
-    res.render("login", { errorMessage: "User Not Found !" });
+app.get("/login", (req, res)=>{
+    res.render("login", {errorMessage: "User Not Found !"});
 });
 
 app.post("/login", passport.authenticate('local', {
     successRedirect: '/todo',
     failureRedirect: '/login'
 }));
-
+  
 app.post("/register", async (req, res) => {
+
     const { name, email, password } = req.body;
 
     try {
@@ -213,26 +236,27 @@ app.post("/register", async (req, res) => {
         const params = {
             access_key: apiKey,
             email: email,
+           // smtp: 1,
             format: 1
         };
        
         const response = await axios.get(apiUrl, { params });
-        console.log(response.data); // For debugging purposes
-        
+        console.log(response.data);
+        //const smtp_check  = response.data.smtp_check;
         const format_valid = response.data.format_valid;
 
         if (format_valid) {
-            const newUser = new User({ email, name });
-
-            User.register(newUser, password, (err, user) => {
+            
+            User.register(new User({ email, name }), password, (err, user) => {
                 if (err) {
-                    console.error('Registration Error:', err);
+                    console.error(err);
                     return res.redirect('/register');
                 }
-                
-                req.login(user, (err) => {
+        
+                // Use req.login to log the user in and then redirect to '/todo'
+                req.login(user, function (err) {
                     if (err) {
-                        console.error('Login Error:', err);
+                        console.error(err);
                         return res.redirect('/login');
                     }
                     return res.redirect('/todo');
@@ -240,14 +264,20 @@ app.post("/register", async (req, res) => {
             });
 
         } else {
-            return res.status(400).render("signup", { errorMessage: "Invalid Email" });
+            return res.status(400).render("signup", {errorMessage: "Invalid Email"});
         }
     } catch (error) {
         console.error('Email validation error:', error);
-        return res.status(500).render("signup", { errorMessage: "Email validation failed. Please try again later" });
+        return res.status(500).render("signup", {errorMessage: "Email validation failed. Please try again later"});
     }
-});
 
+    
+});
+    // Validate email using mailboxlayer API
+
+
+
+// 404 error handler
 app.use((req, res) => {
     res.status(404).send("Page not found");
 });
