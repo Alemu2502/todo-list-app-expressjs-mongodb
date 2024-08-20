@@ -13,22 +13,17 @@ This is a full-stack web application built with Node.js, Express.js, MongoDB, an
 - User-friendly interface with dynamic rendering of todo items using EJS templating
 - Responsive design for seamless usage on different devices
 
-## Screenshots
-
-*Screenshot of the Todo List App in action*
-
 Live at 🚀 https://todo-list-app-expressjs-mongodb.onrender.com/ 
 
 ## Installation
 
 1. Clone the repository:
  git clone [https://github.com/Alemu2502/todo-list-app-expressjs-mongodb.git]
- 2, cd expressjs
- 3, cd todo-list-app-expressjs-mongodb
-4. Install the dependencies:
+ 2. cd todo-list-app-expressjs-mongodb
+3. Install the dependencies:
  npm install
 
-5. Set up the MongoDB Atlas connection:
+4. Set up the MongoDB Atlas connection:
 - Create an account on MongoDB Atlas (if you haven't already).
 - Create a new cluster and obtain the connection URL.
 - Replace the connection URL in `app.js` with your MongoDB Atlas connection URL.
